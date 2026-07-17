@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MacBridge · Sala de Build</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2230; --border:#283040;
+    --txt:#e6edf3; --muted:#8b949e; --accent:#3b82f6; --accent2:#22c55e;
+    --bubble-user:#1f6feb22; --bubble-bot:#21262d; --code:#0b0f14;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--txt);display:flex;height:100vh;overflow:hidden}
+  .side{width:260px;background:var(--panel);border-right:1px solid var(--border);
+    display:flex;flex-direction:column;padding:14px 10px;gap:6px}
+  .brand{display:flex;align-items:center;gap:9px;padding:6px 8px 14px}
+  .logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#3b82f6,#22c55e);
+    display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:15px}
+  .brand b{font-size:15px}.brand span{display:block;font-size:11px;color:var(--muted)}
+  .sec{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:10px 8px 4px}
+  .proj{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;cursor:pointer;
+    color:var(--muted);font-size:13.5px}
+  .proj .dot{width:8px;height:8px;border-radius:50%;background:var(--accent2)}
+  .proj.active{background:var(--panel2);color:var(--txt)}
+  .proj.locked{opacity:.4;cursor:not-allowed}
+  .side-foot{margin-top:auto;font-size:11px;color:var(--muted);padding:8px;text-align:center}
+  .chat{flex:1;display:flex;flex-direction:column;min-width:0}
+  .topbar{height:54px;border-bottom:1px solid var(--border);display:flex;align-items:center;
+    gap:10px;padding:0 18px;background:var(--panel)}
+  .topbar .nm{font-weight:600}
+  .topbar .st{font-size:12px;color:var(--accent2);display:flex;align-items:center;gap:6px}
+  .topbar .st .dot{width:7px;height:7px;border-radius:50%;background:var(--accent2)}
+  .topbar .spacer{flex:1}
+  .topbar .pill{font-size:11px;color:var(--muted);border:1px solid var(--border);padding:4px 9px;border-radius:20px}
+  .msgs{flex:1;overflow-y:auto;padding:22px 18px;display:flex;flex-direction:column;gap:16px}
+  .row{display:flex;gap:11px;max-width:820px}
+  .row.user{flex-direction:row-reverse;margin-left:auto}
+  .av{width:30px;height:30px;border-radius:50%;flex:none;display:flex;align-items:center;
+    justify-content:center;font-size:13px;font-weight:700}
+  .av.bot{background:linear-gradient(135deg,#3b82f6,#22c55e);color:#fff}
+  .av.me{background:#30363d;color:var(--txt)}
+  .bub{padding:11px 14px;border-radius:13px;font-size:13.7px;line-height:1.55;background:var(--bubble-bot);
+    border:1px solid var(--border);white-space:pre-wrap;word-break:break-word}
+  .row.user .bub{background:var(--bubble-user);border-color:#1f6feb55}
+  .bub code{background:var(--code);padding:2px 6px;border-radius:6px;font-size:12.5px;color:#7ee787;
+    font-family:ui-monospace,Menlo,Consolas,monospace}
+  .bub pre{background:var(--code);border:1px solid var(--border);border-radius:9px;padding:11px 13px;
+    margin-top:8px;overflow-x:auto;font-size:12.3px;color:#a5d6ff;
+    font-family:ui-monospace,Menlo,Consolas,monospace;line-height:1.5;white-space:pre}
+  .meta{font-size:11px;color:var(--muted);margin-bottom:3px}
+  .quick{display:flex;gap:8px;flex-wrap:wrap;padding:10px 18px 0}
+  .chip{font-size:12px;color:var(--txt);background:var(--panel2);border:1px solid var(--border);
+    padding:7px 12px;border-radius:20px;cursor:pointer}
+  .chip:hover{border-color:var(--accent)}
+  .input{border-top:1px solid var(--border);padding:12px 18px;background:var(--panel);
+    display:flex;gap:10px;align-items:flex-end}
+  .input textarea{flex:1;resize:none;background:var(--bg);border:1px solid var(--border);border-radius:11px;
+    color:var(--txt);padding:11px 13px;font-size:13.7px;font-family:inherit;height:44px;max-height:120px;outline:none}
+  .input textarea:focus{border-color:var(--accent)}
+  .send{background:var(--accent);color:#fff;border:none;border-radius:11px;height:44px;padding:0 18px;
+    font-weight:600;cursor:pointer;font-size:13.5px}
+  .send:hover{filter:brightness(1.1)}
+  .typing{font-style:italic;color:var(--muted)}
+</style>
+</head>
+<body>
+  <aside class="side">
+    <div class="brand"><div class="logo">M</div><div><b>MacBridge</b><span>build iOS sem Xcode</span></div></div>
+    <div class="sec">Projetos</div>
+    <div class="proj active"><span class="dot"></span> macbridge</div>
+    <div class="proj locked"><span class="dot" style="background:#6b7280"></span> e-commerce (em breve)</div>
+    <div class="proj locked"><span class="dot" style="background:#6b7280"></span> crm-studio (em breve)</div>
+    <div class="side-foot" id="agentState">Agente autônomo ativo · a cada 4h</div>
+  </aside>
+
+  <main class="chat">
+    <div class="topbar">
+      <div class="nm">macbridge</div>
+      <div class="st"><span class="dot"></span> <span id="macState">verificando…</span></div>
+      <div class="spacer"></div>
+      <div class="pill" id="pillBackend">backend: …</div>
+      <div class="pill">roadmap: 1/5</div>
+    </div>
+
+    <div class="msgs" id="msgs"></div>
+
+    <div class="quick">
+      <div class="chip" data-cmd="build">▶ Build</div>
+      <div class="chip" data-cmd="status">📊 Status do Mac</div>
+      <div class="chip" data-cmd="sync">🔄 Sync projeto</div>
+      <div class="chip" data-cmd="doctor">🩺 Doctor</div>
+      <div class="chip" data-cmd="mac">🔌 Conectar Mac real</div>
+    </div>
+
+    <div class="input">
+      <textarea id="ta" placeholder="Digite um comando ou fale com o agente…"></textarea>
+      <button class="send" id="send">Enviar</button>
+    </div>
+  </main>
+
+<script>
+const msgs = document.getElementById('msgs');
+const ta = document.getElementById('ta');
+const send = document.getElementById('send');
+const pillBackend = document.getElementById('pillBackend');
+const macState = document.getElementById('macState');
+
+function addBubble(text, who){
+  const row = document.createElement('div');
+  row.className = 'row' + (who==='user' ? ' user' : '');
+  const av = document.createElement('div');
+  av.className = 'av ' + (who==='user' ? 'me' : 'bot');
+  av.textContent = who==='user' ? 'VC' : 'M';
+  const wrap = document.createElement('div');
+  const meta = document.createElement('div');
+  meta.className = 'meta';
+  meta.textContent = who==='user' ? 'você' : 'MacBridge · agora';
+  const bub = document.createElement('div');
+  bub.className = 'bub';
+  const esc = String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  bub.innerHTML = esc.replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>');
+  wrap.appendChild(meta); wrap.appendChild(bub);
+  row.appendChild(av); row.appendChild(wrap);
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+  return bub;
+}
+
+function typing(){
+  const row = document.createElement('div');
+  row.className = 'row';
+  row.innerHTML = '<div class="av bot">M</div><div><div class="meta">MacBridge</div>'
+    + '<div class="bub typing">digitando…</div></div>';
+  msgs.appendChild(row); msgs.scrollTop = msgs.scrollHeight;
+  return row;
+}
+
+const MOCK = {
+  build: "Rodando no Mac simulado…\n** BUILD SUCCEEDED ** [12s]\nCompile Swift Module 'App' (12 sources)\n[artifact] DemoApp.ipa → ~/.macbridge/artifacts",
+  status: "Mac simulado:\n• Xcode 15.4 (Build 15F31d)\n• Swift 5.10 · arch arm64\n• disco livre: 340 GiB",
+  sync: "Enviando 19 arquivos para ~/builds no Mac… pronto.",
+  doctor: "ssh OK · scp OK · python OK · rsync opcional (usando scp -r)\nResultado: tudo pronto.",
+  mac: "Para conectar um Mac real:\n`macbridge init --backend ssh --host <ip> --user dev`\n(AWS EC2 Mac ou MacStadium trial)."
+};
+
+let vscodeApi = null;
+try { vscodeApi = acquireVsCodeApi(); } catch(e) { vscodeApi = null; }
+
+let msgId = 0;
+const pending = {};
+if (vscodeApi) {
+  window.addEventListener('message', (e) => {
+    const m = e.data;
+    if (m && m.type === 'result' && pending[m.id]) {
+      pending[m.id](m); delete pending[m.id];
+    }
+  });
+}
+
+async function runCli(args){
+  if (vscodeApi) {
+    // modo extensao VS Code: postMessage + resposta assincrona
+    const id = ++msgId;
+    return new Promise((resolve) => {
+      pending[id] = resolve;
+      vscodeApi.postMessage({ type: 'run', id, args });
+      setTimeout(() => { if (pending[id]) { delete pending[id];
+        resolve({ ok:false, exit_code:-1, stdout:'', stderr:'timeout na extensao' }); } }, 300000);
+    });
+  }
+  const resp = await fetch('/api/run', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({args})
+  });
+  if(!resp.ok) throw new Error('HTTP '+resp.status);
+  return await resp.json();
+}
+
+function whichCmd(text){
+  const c = text.trim().toLowerCase();
+  if(c.includes('build')||c.includes('compil')) return ['build'];
+  if(c.includes('conect')||c.includes('mac real')||c.includes('ssh')) return ['mac'];
+  if(c.includes('status')) return ['status'];
+  if(c.includes('sync')) return ['sync'];
+  if(c.includes('doctor')||c.includes('check')) return ['doctor'];
+  if(c.includes('init')) return ['init','--project', text.trim().split(' ').pop() || 'DemoApp'];
+  return null;
+}
+
+async function handle(raw){
+  const args = whichCmd(raw);
+  const t = typing();
+  try{
+    if(!args){ // chat livre: instrui
+      t.remove();
+      addBubble("Comando livre recebido. Use um atalho ou digite: build / status / sync / doctor / init <projeto> / conectar mac.", 'bot');
+      return;
+    }
+    const out = await runCli(args);
+    t.remove();
+    const body = (out.stdout || '') + (out.stderr ? '\n'+out.stderr : '');
+    addBubble((body && body.trim()) ? body.trim() : '(sem saída, exit '+out.exit_code+')', 'bot');
+  }catch(e){
+    t.remove();
+    // fallback mock se a API nao estiver rodando
+    const key = args[0] === 'mac' ? 'mac' : (MOCK[args[0]] ? args[0] : null);
+    if(key){
+      addBubble("[modo mock — servidor da UI nao detectado]\n" + MOCK[key], 'bot');
+    } else {
+      addBubble("[erro] nao consegui falar com o macbridge: "+e.message, 'bot');
+    }
+  }
+}
+
+function sendMsg(){
+  const v = ta.value.trim();
+  if(!v) return;
+  addBubble(v,'user'); ta.value='';
+  handle(v);
+}
+send.addEventListener('click', sendMsg);
+ta.addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();} });
+document.querySelectorAll('.chip').forEach(ch=>{
+  ch.addEventListener('click',()=>{ addBubble(ch.dataset.cmd,'user'); handle(ch.dataset.cmd); });
+});
+
+// ao carregar: checa backend real
+(async ()=>{
+  try{
+    const r = await fetch('/api/run',{method:'POST',headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({args:['status']})});
+    const j = await r.json();
+    pillBackend.textContent = 'backend: real';
+    macState.textContent = j.ok ? 'Mac remoto: online' : 'Mac remoto: erro';
+    addBubble("Conectado ao macbridge real. " + (j.stdout||j.stderr||'').split('\n').slice(0,3).join('\n'), 'bot');
+  }catch(e){
+    pillBackend.textContent = 'backend: mock';
+    macState.textContent = 'Mac remoto: simulado';
+    addBubble("Olá! Sou a ponte Windows → Mac do projeto macbridge. "+
+      "O servidor da UI não está rodando, então estou em modo mock. "+
+      "Inicie com `macbridge ui` para comandos reais. Use os atalhos abaixo.", 'bot');
+  }
+})();
+</script>
+</body>
+</html>

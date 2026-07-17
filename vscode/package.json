@@ -1,0 +1,40 @@
+{
+  "name": "macbridge",
+  "displayName": "MacBridge — Build iOS sem Xcode",
+  "description": "Ponte Windows → Mac para build de apps iOS direto do editor. Escreva no Windows, compile no Mac (nuvem ou local) e receba o .ipa de volta.",
+  "version": "0.1.0",
+  "publisher": "derciel",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other", "Programming Languages"],
+  "keywords": ["ios", "xcode", "swift", "mac", "build", "ci", "apple"],
+  "icon": "icon.png",
+  "activationEvents": [],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "macbridge.open",
+        "title": "MacBridge: Abrir sala de build",
+        "category": "MacBridge"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "node --check extension.js",
+    "watch": "node --check extension.js",
+    "package": "vsce package --no-yarn",
+    "publish": "vsce publish --no-yarn"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0",
+    "vsce": "^2.22.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Derciel/macbridge.git"
+  },
+  "license": "MIT"
+}

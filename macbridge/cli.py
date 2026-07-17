@@ -128,6 +128,15 @@ def cmd_pull(args) -> int:
     return 0
 
 
+def cmd_ui(args) -> int:
+    from macbridge import server as server_mod
+    if args.open:
+        import webbrowser
+        webbrowser.open(f"http://{args.host}:{args.port}/")
+    server_mod.serve(host=args.host, port=args.port)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="macbridge",
@@ -163,6 +172,13 @@ def build_parser() -> argparse.ArgumentParser:
     pp = sub.add_parser("pull", help="baixa o .ipa do Mac para o Windows")
     pp.add_argument("--project")
     pp.set_defaults(func=cmd_pull)
+
+    pu = sub.add_parser("ui", help="sobe a interface web local (macbridge ui)")
+    pu.add_argument("--host", default="127.0.0.1")
+    pu.add_argument("--port", type=int, default=8765)
+    pu.add_argument("--open", action="store_true",
+                    help="tenta abrir no navegador padrao")
+    pu.set_defaults(func=cmd_ui)
 
     return p
 
