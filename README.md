@@ -53,12 +53,43 @@ macbridge init --backend ssh --host 10.0.0.5 --user dev --project MeuApp
 macbridge build --configuration Release
 ```
 
+## Extensão VS Code (publicada 🎉)
+Instale na loja: **https://marketplace.visualstudio.com/items?itemName=derciel.macbridge**
+
+Abre uma "sala de build" (Webview estilo chat) dentro do editor que executa o
+CLI `macbridge` de verdade — `build`, `status`, `sync`, `doctor`, `init` — e mostra
+o log do Mac remoto. Atalhos: **▶ Build / 📊 Status / 🔄 Sync / 🩺 Doctor**.
+
+```bash
+# instalar o .vsix gerado localmente (ou pela loja acima)
+code --install-extension vscode/macbridge-0.1.0.vsix
+# depois: Ctrl+Shift+P → "MacBridge: Abrir sala de build"
+```
+
+## Interface web (UI)
+Além da extensão, o MacBridge tem uma UI web autossuficiente:
+
+```bash
+macbridge ui --open     # sobe em http://127.0.0.1:8765 e abre o navegador
+```
+Clique nos atalhos ou digite comandos em linguagem natural — a UI chama o CLI
+real (`backend: real`) e exibe o log no chat. Sem o servidor, ela cai em modo mock.
+
+A UI é híbrida: detecta se está numa Webview do VS Code (usa `postMessage`) ou num
+navegador (usa `fetch` no endpoint `/api/run`). Compartilha o mesmo `ui/index.html`.
+
+## Build real grátis (GitHub Actions)
+O repo já roda `xcodebuild` num **macOS real (free tier)** a cada push/PR:
+https://github.com/Derciel/macbridge/actions — prova o conceito sem você ter um Mac.
+
 ## Roadmap (open-source, contribuições bem-vindas)
-- [ ] integração com VS Code / Zed (extensão que chama `macbridge build`)
+- [x] integração com VS Code (extensão publicada na marketplace)
 - [x] download do `.ipa` de volta pro Windows
+- [x] interface web (`macbridge ui`) + extensão VS Code
 - [ ] cache de dependências (não reenviar Pods/SPM a cada build)
 - [ ] upload direto pra TestFlight (via `xcrun altool`)
 - [ ] suporte a `fastlane` no Mac remoto
+- [ ] SaaS build farm (Macs alugados: AWS EC2 Mac / MacStadium + GitHub Actions free)
 
 ## Licença
 MIT. Não é produto Apple, não é afiliado, não usa marca nem binários da Apple.
