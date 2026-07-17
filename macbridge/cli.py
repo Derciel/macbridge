@@ -128,6 +128,29 @@ def cmd_pull(args) -> int:
     return 0
 
 
+def cmd_cache(args) -> int:
+    cfg = cfg_mod.load_config()
+    backend = create_backend(cfg)
+    backend.connect()
+    remote = cfg.get("remote_path") or "~/builds"
+    cached = backend.cache_get(remote)
+    if args.reset:
+        backend.cache_put(remote, "")
+        print(f"[cache] resetado em {remote} (proximo sync reenvia deps)")
+        return 0
+    if cached:
+        print(f"[cache] fingerprint atual: {cached}")
+        from macbridge import sync as sync_mod
+        root = Path(cfg.get("local_root", "."))
+        local = sync_mod.deps_fingerprint(root)
+        state = "HIT (deps em cache)" if local == cached else "MISS (deps mudaram)"
+        print(f"[cache] fingerprint local : {local or '(sem manifesto de deps)'}")
+        print(f"[cache] estado: {state}")
+    else:
+        print(f"[cache] nenhum cache de deps em {remote}")
+    return 0
+
+
 def cmd_ui(args) -> int:
     from macbridge import server as server_mod
     if args.open:
@@ -172,6 +195,11 @@ def build_parser() -> argparse.ArgumentParser:
     pp = sub.add_parser("pull", help="baixa o .ipa do Mac para o Windows")
     pp.add_argument("--project")
     pp.set_defaults(func=cmd_pull)
+
+    pc = sub.add_parser("cache", help="inspeciona/reseta o cache de deps no Mac")
+    pc.add_argument("--reset", action="store_true",
+                    help="apaga o fingerprint de deps (forca reenvio)")
+    pc.set_defaults(func=cmd_cache)
 
     pu = sub.add_parser("ui", help="sobe a interface web local (macbridge ui)")
     pu.add_argument("--host", default="127.0.0.1")

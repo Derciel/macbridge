@@ -11,7 +11,7 @@ import time
 from pathlib import Path
 from typing import Tuple
 
-from macbridge.backends.base import Backend
+from macbridge.backends.base import Backend, CACHE_MARKER
 
 
 class MockBackend(Backend):
@@ -45,10 +45,26 @@ class MockBackend(Backend):
             return self._fake_package(cmd)
         return 0, f"[mock] ok: {cmd}", ""
 
-    def copy(self, local: str, remote: str) -> None:
+    def copy(self, local: str, remote: str, exclude: list = None) -> None:
         src = Path(local)
-        print(f"[mock] copiando {src} -> {remote}")
+        excluded = exclude or []
+        msg = f"[mock] copiando {src} -> {remote}"
+        if excluded:
+            msg += f" (excluindo cache de deps: {', '.join(excluded)})"
+        print(msg)
         time.sleep(0.1)
+
+    def cache_get(self, remote_path: str) -> str:
+        marker = Path(remote_path).expanduser() / CACHE_MARKER
+        if marker.exists():
+            return marker.read_text(encoding="utf-8").strip()
+        return ""
+
+    def cache_put(self, remote_path: str, fingerprint: str) -> None:
+        path = Path(remote_path).expanduser()
+        path.mkdir(parents=True, exist_ok=True)
+        (path / CACHE_MARKER).write_text(fingerprint, encoding="utf-8")
+        print(f"[mock] cache de deps salvo em {remote_path}/{CACHE_MARKER}")
 
     def pull(self, remote: str, local: str) -> None:
         src = Path(remote).expanduser()

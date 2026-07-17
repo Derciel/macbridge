@@ -84,11 +84,26 @@ navegador (usa `fetch` no endpoint `/api/run`). Compartilha o mesmo `ui/index.ht
 O repo já roda `xcodebuild` num **macOS real (free tier)** a cada push/PR:
 https://github.com/Derciel/macbridge/actions — prova o conceito sem você ter um Mac.
 
+## Cache de dependências
+Para projetos com CocoaPods (`Podfile.lock`), SPM (`Package.resolved`),
+Carthage (`Cartfile.resolved`) ou `vendor/`, o MacBridge calcula um
+*fingerprint* dos manifestos e **não reenvia** `Pods`/`.build`/`Carthage`/`vendor`
+quando nada mudou — economizando centenas de MB por sync. O estado fica num
+arquivo `.macbridge_deps.cache` dentro do `remote_path` no Mac.
+
+```bash
+macbridge cache            # mostra fingerprint local x remoto e o estado (HIT/MISS)
+macbridge cache --reset    # invalida o cache (proximo sync reenvia as deps)
+```
+Na primeira vez (ou quando os manifestos mudam) o log mostra
+`[sync] cache de deps MISS`; depois, `cache de deps HIT` e os diretórios
+pesados são pulados.
+
 ## Roadmap (open-source, contribuições bem-vindas)
 - [x] integração com VS Code (extensão publicada na marketplace)
 - [x] download do `.ipa` de volta pro Windows
 - [x] interface web (`macbridge ui`) + extensão VS Code
-- [ ] cache de dependências (não reenviar Pods/SPM a cada build)
+- [x] cache de dependências (não reenviar Pods/SPM a cada build)
 - [ ] upload direto pra TestFlight (via `xcrun altool`)
 - [ ] suporte a `fastlane` no Mac remoto
 - [ ] SaaS build farm (Macs alugados: AWS EC2 Mac / MacStadium + GitHub Actions free)
