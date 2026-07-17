@@ -3,7 +3,7 @@
   "displayName": "MacBridge — Build iOS sem Xcode",
   "description": "Ponte Windows → Mac para build de apps iOS direto do editor. Escreva no Windows, compile no Mac (nuvem ou local) e receba o .ipa de volta.",
   "version": "0.1.0",
-  "publisher": "derciel",
+  "publisher": "macbridge",
   "engines": { "vscode": "^1.85.0" },
   "categories": ["Other", "Programming Languages"],
   "keywords": ["ios", "xcode", "swift", "mac", "build", "ci", "apple"],

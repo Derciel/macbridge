@@ -56,7 +56,7 @@ macbridge build --configuration Release
 ```
 
 ## Extensão VS Code (publicada 🎉)
-Instale na loja: **https://marketplace.visualstudio.com/items?itemName=derciel.macbridge**
+Instale na loja: **https://marketplace.visualstudio.com/items?itemName=macbridge.macbridge**
 
 Abre uma "sala de build" (Webview estilo chat) dentro do editor que executa o
 CLI `macbridge` de verdade — `build`, `status`, `sync`, `doctor`, `init` — e mostra
