@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "macbridge"
+version = "0.1.0"
+description = "Ponte Windows -> Mac para build de apps iOS sem precisar do Xcode no Windows"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Comunidade MacBridge" }]
+keywords = ["ios", "xcode", "swift", "build", "windows", "mac", "bridge"]
+
+[project.scripts]
+macbridge = "macbridge.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["macbridge*"]
