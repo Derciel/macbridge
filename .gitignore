@@ -8,3 +8,13 @@ dist/
 # macbridge
 .macbridge.json
 .macbridge/artifacts/
+
+# segredos (NUNCA subir pro git)
+.pat
+.token
+*.pat
+*.token
+key*.txt
+token*.txt
+secret*.txt
+.env
