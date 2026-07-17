@@ -1,0 +1,43 @@
+name: iOS Build (real Mac, free)
+
+# Roda num runner macOS REAL do GitHub (free tier: 2000 min/mes).
+# Prova o conceito do macbridge: build Apple acontecendo em hardware Apple legitimo,
+# sem voce ter um Mac. Step 1 e garantido (swift build). Step 2 e best-effort
+# (xcodebuild num xcodeproj gerado por script) -- se falhar, ajustamos com o log.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-on-real-mac:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Toolchain Apple (swift/xcodebuild) disponivel?
+        run: |
+          echo "swift: $(swift --version | head -1)"
+          echo "xcodebuild: $(xcodebuild -version | head -1)"
+
+      - name: "[garantido] swift build do exemplo"
+        working-directory: examples/hello-macbridge
+        run: swift build -c release
+
+      - name: "[garantido] roda o binario (prova execucao real)"
+        working-directory: examples/hello-macbridge
+        run: ./.build/release/hello-macbridge
+
+      - name: "[best-effort] xcodebuild num xcodeproj gerado"
+        continue-on-error: true
+        working-directory: examples/hello-macbridge
+        run: |
+          python3 generate_xcodeproj.py --name HelloMacBridge --out HelloMacBridge.xcodeproj
+          xcodebuild build \
+            -project HelloMacBridge.xcodeproj \
+            -scheme HelloMacBridge \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO
