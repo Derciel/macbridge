@@ -2,7 +2,7 @@
   "name": "macbridge-vscode",
   "displayName": "MacBridge VS Code",
   "description": "Ponte Windows → Mac para build de apps iOS direto do editor. Escreva no Windows, compile no Mac (nuvem ou local) e receba o .ipa de volta.",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "publisher": "macbridge",
   "engines": {
     "vscode": "^1.85.0"
