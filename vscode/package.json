@@ -8,6 +8,10 @@
   "categories": ["Other", "Programming Languages"],
   "keywords": ["ios", "xcode", "swift", "mac", "build", "ci", "apple"],
   "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#0d1117",
+    "theme": "dark"
+  },
   "activationEvents": [],
   "main": "./extension.js",
   "contributes": {

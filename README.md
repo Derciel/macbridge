@@ -1,5 +1,7 @@
 # MacBridge
 
+![MacBridge](assets/banner.png)
+
 **Ponte Windows → Mac para build de apps iOS sem precisar do Xcode no Windows.**
 
 Você escreve o código no Windows (VS Code, Zed, editor qualquer), o MacBridge
