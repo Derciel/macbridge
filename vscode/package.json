@@ -1,12 +1,25 @@
 {
-  "name": "macbridge",
-  "displayName": "MacBridge — Build iOS sem Xcode",
+  "name": "macbridge-vscode",
+  "displayName": "MacBridge VS Code",
   "description": "Ponte Windows → Mac para build de apps iOS direto do editor. Escreva no Windows, compile no Mac (nuvem ou local) e receba o .ipa de volta.",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "publisher": "macbridge",
-  "engines": { "vscode": "^1.85.0" },
-  "categories": ["Other", "Programming Languages"],
-  "keywords": ["ios", "xcode", "swift", "mac", "build", "ci", "apple"],
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "ios",
+    "xcode",
+    "swift",
+    "mac",
+    "build",
+    "ci",
+    "apple"
+  ],
   "icon": "icon.png",
   "galleryBanner": {
     "color": "#0d1117",
