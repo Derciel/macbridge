@@ -16,13 +16,5 @@ Ponte **Windows → Mac** para build de apps iOS direto do editor. Escreva no Wi
 2. `Ctrl+Shift+P` → **MacBridge: Abrir sala de build**.
 3. Use os atalhos ou digite comandos em linguagem natural.
 
-## Publicar no marketplace
-```bash
-npm install -g @vscode/vsce
-cd vscode
-vsce package      # gera macbridge-0.1.0.vsix
-vsce publish      # requer token da Azure DevOps (publisher 'derciel')
-```
-
 ## Legal
 Não é um clone do Xcode. É uma ponte de build que usa a toolchain aberta da Apple em um Mac legítimo (nuvem ou seu). Respeita o EULA da Apple.
