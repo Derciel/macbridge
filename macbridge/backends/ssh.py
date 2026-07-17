@@ -71,6 +71,20 @@ class SshBackend(Backend):
             raise RuntimeError(f"Falha ao copiar {local}: {proc.stderr.strip()}")
         print(f"[scp] {local} -> {self._target()}:{remote}")
 
+    def pull(self, remote: str, local: str) -> None:
+        if shutil.which("scp") is None:
+            raise RuntimeError("'scp' nao encontrado no PATH.")
+        dst = Path(local)
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        scp = ["scp", "-P", str(self._port), "-o", "BatchMode=yes"]
+        if self._key:
+            scp += ["-i", str(self._key)]
+        scp += [f"{self._target()}:{remote}", str(dst)]
+        proc = subprocess.run(scp, capture_output=True, text=True)
+        if proc.returncode != 0:
+            raise RuntimeError(f"Falha ao baixar {remote}: {proc.stderr.strip()}")
+        print(f"[scp] {self._target()}:{remote} -> {dst}")
+
     def status(self) -> dict:
         rc, out, err = self.run("xcodebuild -version; swift --version; uname -m; df -h /")
         if rc != 0:

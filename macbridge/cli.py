@@ -19,6 +19,20 @@ def _print_status(backend) -> None:
         print(f"  {k}: {v}")
 
 
+def _pull_artifact(backend, cfg: dict, remote_path: str) -> str:
+    """Baixa o .ipa do Mac de volta pro Windows (~/.macbridge/artifacts)."""
+    artifact = build_mod.artifact_path(cfg, remote_path)
+    local_dir = Path.home() / ".macbridge" / "artifacts"
+    local_dir.mkdir(parents=True, exist_ok=True)
+    project_name = cfg.get("project_name") or "App"
+    scheme = cfg.get("scheme") or project_name
+    local_ipa = local_dir / f"{scheme}.ipa"
+    print(f"[pull] baixando artefato {artifact} -> {local_ipa}")
+    backend.pull(artifact, str(local_ipa))
+    print(f"[pull] pronto: {local_ipa} ({local_ipa.stat().st_size} bytes)")
+    return str(local_ipa)
+
+
 def cmd_init(args) -> int:
     cfg = cfg_mod.default_config()
     if args.backend:
@@ -99,7 +113,19 @@ def cmd_build(args) -> int:
         print("--- ERROS ---")
         print(result["stderr"])
     print(f"\nExit code: {result['exit_code']}")
+    if result["exit_code"] == 0 and result.get("artifact") and not args.no_pull:
+        _pull_artifact(backend, cfg, remote)
     return result["exit_code"]
+
+
+def cmd_pull(args) -> int:
+    cfg = cfg_mod.load_config()
+    cfg["project_name"] = args.project or cfg.get("project_name") or Path.cwd().name
+    backend = create_backend(cfg)
+    backend.connect()
+    remote = cfg.get("remote_path") or "~/builds"
+    _pull_artifact(backend, cfg, remote)
+    return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -130,7 +156,13 @@ def build_parser() -> argparse.ArgumentParser:
     pb.add_argument("--configuration", choices=["Debug", "Release"])
     pb.add_argument("--mode", choices=["xcodebuild", "swift"])
     pb.add_argument("--no-sync", action="store_true")
+    pb.add_argument("--no-pull", action="store_true",
+                    help="nao baixar o .ipa de volta pro Windows apos o build")
     pb.set_defaults(func=cmd_build)
+
+    pp = sub.add_parser("pull", help="baixa o .ipa do Mac para o Windows")
+    pp.add_argument("--project")
+    pp.set_defaults(func=cmd_pull)
 
     return p
 

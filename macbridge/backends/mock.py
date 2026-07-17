@@ -40,11 +40,23 @@ class MockBackend(Backend):
             return 0, "/dev/disk1s1  460Gi  120Gi  340Gi  26%  /", ""
         if cmd.startswith("mkdir -p"):
             return 0, "", ""
+        # comando de empacotamento (zip do .app -> .ipa) aceito no mock
+        if "zip -r" in cmd:
+            return self._fake_package(cmd)
         return 0, f"[mock] ok: {cmd}", ""
 
     def copy(self, local: str, remote: str) -> None:
         src = Path(local)
         print(f"[mock] copiando {src} -> {remote}")
+        time.sleep(0.1)
+
+    def pull(self, remote: str, local: str) -> None:
+        src = Path(remote).expanduser()
+        dst = Path(local)
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        if src.exists():
+            dst.write_bytes(src.read_bytes())
+        print(f"[mock] baixando {src} -> {dst}")
         time.sleep(0.1)
 
     def status(self) -> dict:
@@ -60,6 +72,10 @@ class MockBackend(Backend):
     # --- internos -------------------------------------------------------
     def _fake_xcodebuild(self, cmd: str) -> Tuple[int, str, str]:
         scheme = self.cfg.get("scheme") or self.cfg.get("project_name") or "App"
+        remote_path = self.cfg.get("remote_path") or "~/builds"
+        # Caminho do artefato remoto: <remote_path>/<scheme>.ipa
+        # (build real deixa o .ipa sob o remote_path; aqui simulamos o mesmo)
+        artifact_remote = f"{remote_path}/{scheme}.ipa"
         lines = [
             "Prepare packages",
             "ComputeTargetPrebuildModuleDependencies",
@@ -72,12 +88,17 @@ class MockBackend(Backend):
             f"** BUILD SUCCEEDED ** [{random.randint(8, 40)}s]",
         ]
         out = "\n".join(lines)
-        # gera artefato fake
-        artifact = Path.home() / ".macbridge" / "artifacts" / f"{scheme}.ipa"
+        # artefato fake remoto (sera baixado pro Windows pelo pull)
+        artifact = Path(artifact_remote).expanduser()
         artifact.parent.mkdir(parents=True, exist_ok=True)
         artifact.write_bytes(b"PK\x03\x04 FAKE IPA ARTIFACT")
         out += f"\n[artifact] {artifact}"
         return 0, out, ""
+
+    def _fake_package(self, cmd: str) -> Tuple[int, str, str]:
+        # no mock o artefato ja foi criado por _fake_xcodebuild; o comando de
+        # empacotamento so confirma sucesso (sem reescrever nada).
+        return 0, "[mock] pacote .ipa pronto", ""
 
     def _fake_swift_build(self, cmd: str) -> Tuple[int, str, str]:
         lines = [

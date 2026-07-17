@@ -44,8 +44,9 @@ macbridge init --backend mock --project MeuApp
 # 3. status do "Mac"
 macbridge status
 
-# 4. sincroniza + build
+# 4. sincroniza + build (e baixa o .ipa de volta pro Windows)
 macbridge build
+macbridge pull   # baixa o .ipa do Mac para ~/.macbridge/artifacts (re-baixar)
 
 # com Mac real (SSH):
 macbridge init --backend ssh --host 10.0.0.5 --user dev --project MeuApp
@@ -54,7 +55,7 @@ macbridge build --configuration Release
 
 ## Roadmap (open-source, contribuições bem-vindas)
 - [ ] integração com VS Code / Zed (extensão que chama `macbridge build`)
-- [ ] download do `.ipa` de volta pro Windows
+- [x] download do `.ipa` de volta pro Windows
 - [ ] cache de dependências (não reenviar Pods/SPM a cada build)
 - [ ] upload direto pra TestFlight (via `xcrun altool`)
 - [ ] suporte a `fastlane` no Mac remoto

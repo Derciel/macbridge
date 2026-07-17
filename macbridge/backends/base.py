@@ -29,6 +29,10 @@ class Backend:
         """Copia arquivo/diretorio local -> remoto (recursivo)."""
         raise NotImplementedError
 
+    def pull(self, remote: str, local: str) -> None:
+        """Copia arquivo remoto -> local (baixa artefato pro Windows)."""
+        raise NotImplementedError
+
     def status(self) -> dict:
         """Informacoes do Mac remoto: xcode, swift, arch, disk."""
         raise NotImplementedError
